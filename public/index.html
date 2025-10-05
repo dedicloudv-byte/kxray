@@ -3,14 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X-ray VLESS on Koyeb</title>
+    <title>X-ray VLESS Server - Deployed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>X-ray VLESS Server</h1>
-        <p>Your X-ray VLESS server is up and running on Koyeb.</p>
-        <p>This is a custom deployment by Jules.</p>
+    <div class="card">
+        <div class="card-header">
+            <div class="logo">🚀</div>
+            <h1>Server VLESS Anda Aktif!</h1>
+            <p>Server X-ray VLESS Anda berhasil di-deploy di Koyeb.</p>
+        </div>
+        <div class="card-body">
+            <h2>Konfigurasi VLESS</h2>
+            <p class="subtitle">Salin tautan di bawah ini dan impor ke aplikasi klien Anda (misalnya, v2rayNG, Nekoray).</p>
+            <div class="config-box">
+                <pre id="vless-link">VLESS_LINK_PLACEHOLDER</pre>
+                <button id="copy-button" title="Salin ke Clipboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="card-footer">
+            <p>Dibuat oleh Jules.</p>
+        </div>
     </div>
+    <script src="app.js"></script>
 </body>
 </html>

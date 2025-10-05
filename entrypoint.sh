@@ -1,6 +1,27 @@
 #!/bin/sh
 
-# Generate X-ray config
+# Pastikan variabel yang diperlukan sudah diatur
+if [ -z "$UUID" ] || [ -z "$KOYEB_APP_URL" ]; then
+  echo "Error: Variabel lingkungan UUID dan KOYEB_APP_URL harus diatur."
+  echo "Silakan atur di konfigurasi layanan Koyeb Anda."
+  exit 1
+fi
+
+# Koyeb menyediakan nama aplikasi, tetapi kita siapkan cadangan.
+APP_NAME=${KOYEB_APP_NAME:-koyeb-vless}
+
+# 1. Buat tautan VLESS
+# Formatnya adalah vless://<uuid>@<alamat>:<port>?<opsi>#<alias>
+# Koyeb menggunakan port 443 untuk lalu lintas HTTPS.
+# Domain disediakan oleh KOYEB_APP_URL (kita hapus https://).
+DOMAIN=$(echo $KOYEB_APP_URL | sed 's|https://||')
+VLESS_LINK="vless://${UUID}@${DOMAIN}:443?encryption=none&security=tls&type=ws&path=%2Fvless#${APP_NAME}"
+
+# 2. Perbarui file HTML dengan tautan VLESS
+# Gunakan sed untuk mengganti placeholder. Gunakan pembatas yang berbeda karena tautan berisi garis miring.
+sed -i "s|VLESS_LINK_PLACEHOLDER|${VLESS_LINK}|g" /var/www/public/index.html
+
+# 3. Buat konfigurasi X-ray (tetap sama)
 cat << EOF > /etc/xray/config.json
 {
   "log": {
@@ -35,7 +56,7 @@ cat << EOF > /etc/xray/config.json
 }
 EOF
 
-# Generate Nginx config
+# 4. Buat konfigurasi Nginx (tetap sama)
 cat << EOF > /etc/nginx/nginx.conf
 user nginx;
 worker_processes auto;
@@ -74,8 +95,8 @@ http {
 }
 EOF
 
-# Run X-ray in the background
+# 5. Jalankan X-ray di latar belakang
 /usr/local/bin/xray -config /etc/xray/config.json &
 
-# Run Nginx in the foreground
+# 6. Jalankan Nginx di latar depan
 nginx -g 'daemon off;'
