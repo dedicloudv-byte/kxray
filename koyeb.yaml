@@ -1,0 +1,24 @@
+# koyeb.yaml
+name: xray-vless-web-app
+services:
+  - name: app
+    instance_type: free
+    git:
+      branch: main
+      repository: "github.com/user/repo" # Ganti dengan URL repositori Anda
+    docker:
+      dockerfile: Dockerfile
+    regions:
+      - fra # Anda bisa memilih region lain yang tersedia
+    ports:
+      - port: 80
+        protocol: HTTP
+    env:
+      - key: UUID
+        value: "a7a5b3a2-b1c5-4d8f-8a2e-9f6c3e7d1b9f" # Ganti dengan UUID Anda sendiri jika diinginkan
+      - key: PORT
+        value: "80"
+    health_checks:
+      - port: 80
+        type: http
+        path: /
