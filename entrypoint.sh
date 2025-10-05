@@ -1,27 +1,26 @@
 #!/bin/sh
 
-# Pastikan variabel yang diperlukan sudah diatur
-if [ -z "$UUID" ] || [ -z "$KOYEB_APP_URL" ]; then
-  echo "Error: Variabel lingkungan UUID dan KOYEB_APP_URL harus diatur."
-  echo "Silakan atur di konfigurasi layanan Koyeb Anda."
+# Pastikan variabel yang diperlukan (UUID dan APP_URL) sudah diatur secara manual oleh pengguna
+if [ -z "$UUID" ] || [ -z "$APP_URL" ]; then
+  echo "Error: Variabel lingkungan UUID dan APP_URL harus diatur."
+  echo "Silakan atur di konfigurasi layanan Koyeb Anda. Lihat README untuk instruksi."
   exit 1
 fi
 
-# Koyeb menyediakan nama aplikasi, tetapi kita siapkan cadangan.
-APP_NAME=${KOYEB_APP_NAME:-koyeb-vless}
+# Ekstrak nama aplikasi dari APP_URL untuk digunakan sebagai alias (nama koneksi)
+# Ini akan mengambil bagian pertama dari nama domain (misalnya, "nama-app-anda" dari "nama-app-anda.koyeb.app")
+APP_NAME=$(echo $APP_URL | sed -e 's|https://||' -e 's|\..*||')
 
-# 1. Buat tautan VLESS
-# Formatnya adalah vless://<uuid>@<alamat>:<port>?<opsi>#<alias>
-# Koyeb menggunakan port 443 untuk lalu lintas HTTPS.
-# Domain disediakan oleh KOYEB_APP_URL (kita hapus https://).
-DOMAIN=$(echo $KOYEB_APP_URL | sed 's|https://||')
+# 1. Buat tautan VLESS yang akan ditampilkan di halaman web
+# Domain diambil dari APP_URL yang Anda berikan (tanpa "https://")
+DOMAIN=$(echo $APP_URL | sed 's|https://||')
 VLESS_LINK="vless://${UUID}@${DOMAIN}:443?encryption=none&security=tls&type=ws&path=%2Fvless#${APP_NAME}"
 
-# 2. Perbarui file HTML dengan tautan VLESS
-# Gunakan sed untuk mengganti placeholder. Gunakan pembatas yang berbeda karena tautan berisi garis miring.
+# 2. Perbarui file HTML dengan tautan VLESS yang baru dibuat
+# Menggunakan 'sed' untuk mencari dan mengganti placeholder di index.html
 sed -i "s|VLESS_LINK_PLACEHOLDER|${VLESS_LINK}|g" /var/www/public/index.html
 
-# 3. Buat konfigurasi X-ray (tetap sama)
+# 3. Buat konfigurasi X-ray (tidak ada perubahan di sini)
 cat << EOF > /etc/xray/config.json
 {
   "log": {
@@ -56,7 +55,7 @@ cat << EOF > /etc/xray/config.json
 }
 EOF
 
-# 4. Buat konfigurasi Nginx (tetap sama)
+# 4. Buat konfigurasi Nginx (tidak ada perubahan di sini)
 cat << EOF > /etc/nginx/nginx.conf
 user nginx;
 worker_processes auto;
