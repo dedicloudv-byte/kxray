@@ -3,30 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X-ray VLESS Server - Deployed</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Proxy Subscription Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="card">
-        <div class="card-header">
-            <div class="logo">🚀</div>
-            <h1>Server VLESS Anda Aktif!</h1>
-            <p>Server X-ray VLESS Anda berhasil di-deploy di Koyeb.</p>
-        </div>
-        <div class="card-body">
-            <h2>Konfigurasi VLESS</h2>
-            <p class="subtitle">Salin tautan di bawah ini dan impor ke aplikasi klien Anda (misalnya, v2rayNG, Nekoray).</p>
-            <div class="config-box">
-                <pre id="vless-link">VLESS_LINK_PLACEHOLDER</pre>
-                <button id="copy-button" title="Salin ke Clipboard">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                </button>
+    <div class="container">
+        <header>
+            <h1>Proxy Subscription Generator</h1>
+            <p>Create custom subscription links based on your filters.</p>
+        </header>
+
+        <main>
+            <div class="form-group">
+                <label for="country-filter">Country Codes (comma-separated)</label>
+                <input type="text" id="country-filter" placeholder="e.g., ID,SG,US">
             </div>
-        </div>
-        <div class="card-footer">
-            <p>Dibuat oleh Jules.</p>
-        </div>
+
+            <button id="generate-btn">Generate Link</button>
+
+            <div id="result-area" class="hidden">
+                <label>Your Subscription Link:</label>
+                <div class="result-box">
+                    <pre id="sub-link"></pre>
+                    <button id="copy-btn" title="Copy to Clipboard">
+                        <svg fill="currentColor" viewBox="0 0 20 20"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm-1 4H7c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 12H7V7h8v10z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by a custom solution on Koyeb. Inspired by Nautica.</p>
+        </footer>
     </div>
     <script src="app.js"></script>
 </body>

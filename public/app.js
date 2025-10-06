@@ -1,20 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const copyButton = document.getElementById('copy-button');
-    const vlessLink = document.getElementById('vless-link');
+    const generateBtn = document.getElementById('generate-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const countryFilterInput = document.getElementById('country-filter');
+    const resultArea = document.getElementById('result-area');
+    const subLinkElement = document.getElementById('sub-link');
 
-    if (copyButton && vlessLink) {
-        copyButton.addEventListener('click', () => {
-            const textToCopy = vlessLink.innerText;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                // Visual feedback
-                const originalText = copyButton.innerHTML;
-                copyButton.innerHTML = '✅';
+    generateBtn.addEventListener('click', () => {
+        // Get the country codes, trim whitespace, and convert to uppercase.
+        const countryFilter = countryFilterInput.value.trim().toUpperCase();
+
+        // Construct the full, usable subscription URL.
+        // This is the URL that users will paste into their client's subscription settings.
+        const subUrl = new URL('/api/v1/sub', window.location.origin);
+        if (countryFilter) {
+            subUrl.searchParams.set('cc', countryFilter);
+        }
+
+        // Display the final subscription URL to the user.
+        subLinkElement.textContent = subUrl.toString();
+        resultArea.classList.remove('hidden');
+    });
+
+    copyBtn.addEventListener('click', () => {
+        const linkToCopy = subLinkElement.textContent;
+        if (linkToCopy) {
+            navigator.clipboard.writeText(linkToCopy).then(() => {
+                const originalIcon = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✅';
                 setTimeout(() => {
-                    copyButton.innerHTML = originalText;
+                    copyBtn.innerHTML = originalIcon;
                 }, 1500);
             }).catch(err => {
-                console.error('Failed to copy text: ', err);
+                console.error('Failed to copy link: ', err);
+                alert('Failed to copy link.');
             });
-        });
-    }
+        }
+    });
 });

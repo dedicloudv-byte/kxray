@@ -1,0 +1,14 @@
+{
+  "name": "nautica-inspired-proxy-manager",
+  "version": "1.0.0",
+  "description": "A proxy management system inspired by Nautica, designed for Koyeb deployment.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.13.0"
+  }
+}

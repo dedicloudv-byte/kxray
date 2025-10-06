@@ -1,24 +1,20 @@
-# Use a lightweight Nginx image as the base
-FROM nginx:alpine
+# Stage 1: Use an official Node.js runtime as a parent image
+FROM node:18-alpine
 
-# Install necessary packages and download X-ray
-RUN apk add --no-cache curl unzip \
-    && curl -L -H "Cache-Control: no-cache" -o /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip \
-    && unzip /tmp/xray.zip -d /usr/local/bin/ \
-    && rm /tmp/xray.zip \
-    && chmod +x /usr/local/bin/xray
+# Set the working directory in the container
+WORKDIR /app
 
-# Create directories for X-ray config and web content
-RUN mkdir -p /etc/xray /var/www/public
+# Copy package.json and package-lock.json (if available)
+COPY package*.json ./
 
-# Copy the static web files
-COPY public/ /var/www/public/
+# Install app dependencies
+RUN npm install
 
-# Copy the entrypoint script
-COPY entrypoint.sh /entrypoint.sh
+# Bundle app source
+COPY . .
 
-# Make the entrypoint script executable
-RUN chmod +x /entrypoint.sh
+# Your app binds to port 8080
+EXPOSE 8080
 
-# Set the entrypoint script as the command to run
-CMD ["/entrypoint.sh"]
+# Define the command to run your app
+CMD [ "npm", "start" ]

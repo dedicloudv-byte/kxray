@@ -1,5 +1,6 @@
 # koyeb.yaml
-name: xray-vless-web-app
+# Konfigurasi untuk men-deploy aplikasi manajemen proksi Node.js.
+name: proxy-manager-web
 services:
   - name: app
     instance_type: free
@@ -11,14 +12,9 @@ services:
     regions:
       - fra # Anda bisa memilih region lain yang tersedia
     ports:
-      - port: 8080 # Diperbaiki: Sesuaikan dengan port internal Nginx
+      - port: 8080
         protocol: HTTP
-    env:
-      - key: UUID
-        value: "a7a5b3a2-b1c5-4d8f-8a2e-9f6c3e7d1b9f" # WAJIB: Ganti dengan UUID Anda sendiri
-      - key: APP_URL
-        value: "https://nina.koyeb.app" # WAJIB: Ganti dengan URL publik aplikasi Koyeb Anda
     health_checks:
-      - port: 8080 # Diperbaiki: Sesuaikan dengan port internal Nginx
+      - port: 8080
         type: http
-        path: /
+        path: /api/v1/status # Gunakan endpoint status untuk health check yang lebih andal
