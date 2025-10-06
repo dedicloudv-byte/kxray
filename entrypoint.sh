@@ -8,16 +8,13 @@ if [ -z "$UUID" ] || [ -z "$APP_URL" ]; then
 fi
 
 # Ekstrak nama aplikasi dari APP_URL untuk digunakan sebagai alias (nama koneksi)
-# Ini akan mengambil bagian pertama dari nama domain (misalnya, "nama-app-anda" dari "nama-app-anda.koyeb.app")
 APP_NAME=$(echo $APP_URL | sed -e 's|https://||' -e 's|\..*||')
 
 # 1. Buat tautan VLESS yang akan ditampilkan di halaman web
-# Domain diambil dari APP_URL yang Anda berikan (tanpa "https://")
 DOMAIN=$(echo $APP_URL | sed 's|https://||')
 VLESS_LINK="vless://${UUID}@${DOMAIN}:443?encryption=none&security=tls&type=ws&path=%2Fvless#${APP_NAME}"
 
 # 2. Perbarui file HTML dengan tautan VLESS yang baru dibuat
-# Menggunakan 'sed' untuk mencari dan mengganti placeholder di index.html
 sed -i "s|VLESS_LINK_PLACEHOLDER|${VLESS_LINK}|g" /var/www/public/index.html
 
 # 3. Buat konfigurasi X-ray (tidak ada perubahan di sini)
@@ -55,7 +52,8 @@ cat << EOF > /etc/xray/config.json
 }
 EOF
 
-# 4. Buat konfigurasi Nginx (tidak ada perubahan di sini)
+# 4. Buat konfigurasi Nginx dengan port internal yang di-hardcode
+# Koyeb akan secara otomatis merutekan lalu lintas dari port 80/443 ke port 8080 ini.
 cat << EOF > /etc/nginx/nginx.conf
 user nginx;
 worker_processes auto;
@@ -73,7 +71,7 @@ http {
     default_type application/octet-stream;
 
     server {
-        listen ${PORT} default_server;
+        listen 8080 default_server; # Diperbaiki: Gunakan port internal yang tetap
         server_name _;
 
         location /vless {

@@ -11,14 +11,14 @@ services:
     regions:
       - fra # Anda bisa memilih region lain yang tersedia
     ports:
-      - port: 80
+      - port: 8080 # Diperbaiki: Sesuaikan dengan port internal Nginx
         protocol: HTTP
     env:
       - key: UUID
         value: "a7a5b3a2-b1c5-4d8f-8a2e-9f6c3e7d1b9f" # WAJIB: Ganti dengan UUID Anda sendiri
       - key: APP_URL
-        value: "https://nama-app-anda.koyeb.app" # WAJIB: Ganti dengan URL publik aplikasi Koyeb Anda
+        value: "https://nina.koyeb.app" # WAJIB: Ganti dengan URL publik aplikasi Koyeb Anda
     health_checks:
-      - port: 80
+      - port: 8080 # Diperbaiki: Sesuaikan dengan port internal Nginx
         type: http
         path: /
