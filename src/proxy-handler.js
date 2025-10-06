@@ -1,27 +1,57 @@
 import { Buffer } from 'buffer';
 
-// A reliable public source for VLESS subscription data
-const VLESS_SUB_URL = "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_base64.txt";
+// An array of reliable public sources for VLESS subscription data
+const VLESS_SOURCES = [
+    "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_base64.txt",
+    "https://raw.githubusercontent.com/sevcator/5ubscrpt10n/main/protocols/vl.txt"
+];
 
 /**
- * Fetches and decodes the VLESS subscription list.
- * The source provides a base64 encoded list of VLESS links.
+ * Fetches VLESS links from a given URL.
+ * It handles both plain text lists and base64 encoded lists.
+ * @param {string} url - The URL of the subscription source.
+ * @returns {Promise<string[]>} - A promise that resolves to an array of VLESS links.
  */
-async function getVlessServers() {
+async function fetchFromSource(url) {
     try {
-        const response = await fetch(VLESS_SUB_URL);
+        const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Failed to fetch VLESS list: ${response.statusText}`);
+            console.error(`Failed to fetch from ${url}: ${response.statusText}`);
+            return [];
         }
-        const base64Data = await response.text();
-        const decodedData = Buffer.from(base64Data, 'base64').toString('utf-8');
+        const textData = await response.text();
 
-        // Return an array of individual VLESS links
-        return decodedData.split('\n').filter(link => link.startsWith('vless://'));
+        // Check if the data is likely base64 encoded. If so, decode it.
+        // A simple check is to see if it's a single long string without newlines.
+        if (!textData.includes('\n') && textData.length > 100) {
+            const decodedData = Buffer.from(textData, 'base64').toString('utf-8');
+            return decodedData.split('\n').filter(link => link.startsWith('vless://'));
+        }
+
+        // Otherwise, assume it's a plain text list.
+        return textData.split('\n').filter(link => link.startsWith('vless://'));
     } catch (error) {
-        console.error("Error fetching VLESS servers:", error);
+        console.error(`Error processing source ${url}:`, error);
         return [];
     }
+}
+
+/**
+ * Fetches VLESS servers from all defined sources, merges them, and removes duplicates.
+ */
+async function getVlessServers() {
+    // Fetch from all sources concurrently
+    const promises = VLESS_SOURCES.map(url => fetchFromSource(url));
+    const results = await Promise.all(promises);
+
+    // Flatten the array of arrays into a single array
+    const allLinks = results.flat();
+
+    // Use a Set to automatically handle duplicates, then convert back to an array
+    const uniqueLinks = [...new Set(allLinks)];
+
+    console.log(`Fetched a total of ${uniqueLinks.length} unique VLESS servers.`);
+    return uniqueLinks;
 }
 
 /**
@@ -34,12 +64,12 @@ export async function generateSubscription(countryCodes) {
 
     let filteredServers = allServers;
 
-    if (countryCodes.length > 0) {
+    if (countryCodes.length > 0 && countryCodes[0] !== '') {
         filteredServers = allServers.filter(link => {
             // Extract the server name (alias) from the link
-            const alias = decodeURIComponent(link.split('#')[1] || '');
+            const alias = decodeURIComponent(link.split('#')[1] || '').toUpperCase();
             // Check if the alias contains any of the provided country codes
-            return countryCodes.some(cc => alias.toUpperCase().includes(cc));
+            return countryCodes.some(cc => alias.includes(cc));
         });
     }
 
